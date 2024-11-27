@@ -17,4 +17,4 @@ done
 sleep 5
 
 # restart on crash
-frida-server -D
+FGGB -D
