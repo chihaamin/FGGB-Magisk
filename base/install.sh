@@ -124,7 +124,7 @@ REPLACE="
 print_modname() {
   ui_print " "
   ui_print "    ********************************************"
-  ui_print "    *          Magisk-/KernelSU-Frida          *"
+  ui_print "    *                Magisk-FGGB               *"
   ui_print "    ********************************************"
   ui_print " "
 }
@@ -134,9 +134,9 @@ print_modname() {
 on_install() {
   case $ARCH in
     arm64) F_ARCH=$ARCH;;
-    # arm)   F_ARCH=$ARCH;;
-    # x64)   F_ARCH=x86_64;;
-    # x86)   F_ARCH=$ARCH;;
+    arm)   F_ARCH=$ARCH;;
+    x64)   F_ARCH=x86_64;;
+    x86)   F_ARCH=$ARCH;;
     *)     ui_print "Unsupported architecture: $ARCH"; abort;;
   esac
 
@@ -167,8 +167,8 @@ fi
   chcon -R u:object_r:system_file:s0 "$F_TARGETDIR"
   chmod -R 755 "$F_TARGETDIR"
 
-  $UNZIP -qq -o "$ZIPFILE" "files/FGGB-$F_ARCH" -j -d "$F_TARGETDIR"
-  mv "$F_TARGETDIR/FGGB-$F_ARCH" "$F_TARGETDIR/FGGB"
+  $UNZIP -qq -o "$ZIPFILE" "files/FGGB" -j -d "$F_TARGETDIR"
+  mv "$F_TARGETDIR/FGGB" "$F_TARGETDIR/FGGB"
 }
 
 # Only some special files require specific permissions

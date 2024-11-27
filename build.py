@@ -44,6 +44,7 @@ def extract_file(archive_path: Path, dest_path: Path):
     print(archive_path)
     with zipfile.ZipFile(archive_path, "r") as zip_ref:
         zip_ref.extractall(dest_path)
+
         # # file_content = f.read()
         # path = dest_path.parent
 
@@ -54,13 +55,13 @@ def extract_file(archive_path: Path, dest_path: Path):
 
 
 def create_module_prop(path: Path, version: str):
-    module_prop = f"""id=magisk-FGGB
-name=MagiskFridaGGBridge
-version={version}
-versionCode={version.replace(".", "").replace("-", "")}
-author=XEKEX
-description=Run FGGB on boot
-updateJson=https://github.com/chihaamin/FGGB-Magisk/releases/latest/download/updater.json"""
+    module_prop = f"""id=magisk_FGGB
+    name=Magisk Frida GG Bridge
+    version={version}
+    versionCode={version.replace(".", "").replace("-", "")}
+    author=XEKEX
+    description=Run FGGB on boot
+    updateJson=https://github.com/chihaamin/FGGB-Magisk/releases/latest/download/{version}/updater.json"""
 
     with open(path.joinpath("module.prop"), "w", newline="\n") as f:
         f.write(module_prop)
@@ -87,7 +88,7 @@ def fill_module(arch: str, version: str):
     download_file(FGGB_url + FGGB, FGGB_path)
     files_dir = PATH_BUILD_TMP.joinpath("files")
     files_dir.mkdir(exist_ok=True)
-    extract_file(FGGB_path, files_dir.joinpath(f"FGGB-v{version}"))
+    extract_file(FGGB_path, files_dir)
 
 
 def create_updater_json(version: str):
@@ -107,7 +108,7 @@ def create_updater_json(version: str):
 def package_module(version: str):
     logger.info("Packaging module")
 
-    module_zip = PATH_BUILD.joinpath(f"FGGB-Magisk-{version}.zip")
+    module_zip = PATH_BUILD.joinpath(f"FGGB-Magisk-v{version}.zip")
 
     with zipfile.ZipFile(module_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk(PATH_BUILD_TMP):
