@@ -1,6 +1,8 @@
 import re
 import requests
 import subprocess
+import json
+from pathlib import Path
 
 
 # 12.7.5-2, 12.7.5-3, ... -> 12.7.5
@@ -19,8 +21,8 @@ def get_last_github_tag(project_name) -> str:
 
 # gets last tag of frida
 def get_last_frida_tag() -> str:
-    last_frida_tag = get_last_github_tag("chihaamin/FGGB")
-    print(f"Last frida tag: {last_frida_tag}")
+    last_frida_tag = get_last_github_tag("chihaamin/efdumper")
+    print(f"Last efdumper tag: {last_frida_tag}")
     return last_frida_tag
 
 
@@ -74,3 +76,17 @@ def get_next_revision(current_tag: str) -> str:
             break
         i += 1
     return new_tag
+
+
+def increment_version(version: str) -> str:
+    parts = version.split(".")
+    parts[-1] = str(int(parts[-1]) + 1)
+    return ".".join(parts)
+
+
+def get_next_project_version() -> str:
+    updater_path = Path(__file__).parent.joinpath("build", "updater.json")
+    with open(updater_path, "r") as f:
+        updater = json.load(f)
+    current_version = updater["version"]
+    return increment_version(current_version)

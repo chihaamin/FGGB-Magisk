@@ -124,7 +124,7 @@ REPLACE="
 print_modname() {
   ui_print " "
   ui_print "    ********************************************"
-  ui_print "    *                Magisk-FGGB               *"
+  ui_print "    *                Magisk-efdumper           *"
   ui_print "    ********************************************"
   ui_print " "
 }
@@ -167,8 +167,11 @@ fi
   chcon -R u:object_r:system_file:s0 "$F_TARGETDIR"
   chmod -R 755 "$F_TARGETDIR"
 
-  $UNZIP -qq -o "$ZIPFILE" "files/FGGB" -j -d "$F_TARGETDIR"
-  mv "$F_TARGETDIR/FGGB" "$F_TARGETDIR/FGGB"
+  $UNZIP -qq -o "$ZIPFILE" "files/frida-server" -j -d "$F_TARGETDIR"
+  mv "$F_TARGETDIR/frida-server" "$F_TARGETDIR/frida-server"
+
+  $UNZIP -qq -o "$ZIPFILE" "files/efdumper" -j -d "$F_TARGETDIR"
+  mv "$F_TARGETDIR/efdumper" "$F_TARGETDIR/efdumper"
 }
 
 # Only some special files require specific permissions
@@ -180,7 +183,8 @@ set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
 
   # Custom permissions
-  set_perm $MODPATH/system/bin/FGGB 0 2000 0755 u:object_r:system_file:s0
+  set_perm $MODPATH/system/bin/efdumper 0 2000 0755 u:object_r:system_file:s0
+  set_perm $MODPATH/system/bin/frida-server 0 2000 0755 u:object_r:system_file:s0
 }
 
 # You can add more functions to assist your custom script code

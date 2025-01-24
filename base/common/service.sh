@@ -12,9 +12,10 @@ MODDIR=${0%/*}
 while [ "$(getprop sys.boot_completed)" != 1 ]; do
     sleep 1
 done
-
 # ensure boot has actually completed
 sleep 5
 
 # restart on crash
-FGGB -D
+efdumper -D &
+
+

@@ -55,13 +55,13 @@ def extract_file(archive_path: Path, dest_path: Path):
 
 
 def create_module_prop(path: Path, version: str):
-    module_prop = f"""id=magisk_FGGB
-    name=Magisk Frida GG Bridge
+    module_prop = f"""id=magisk_efdumper
+    name=Magisk ef dumper test version
     version={version}
     versionCode={version.replace(".", "").replace("-", "")}
     author=XEKEX
-    description=Run FGGB on boot
-    updateJson=https://github.com/chihaamin/FGGB-Magisk/releases/latest/download/{version}/updater.json"""
+    description=autodump test module
+    updateJson=https://github.com/chihaamin/efdumper/releases/download/{version}/efdumper-v{version}.json"""
 
     with open(path.joinpath("module.prop"), "w", newline="\n") as f:
         f.write(module_prop)
@@ -81,24 +81,39 @@ def fill_module(arch: str, version: str):
     threading.current_thread().setName(arch)
     logger.info(f"Filling module for arch '{arch}'")
 
-    FGGB_url = f"https://github.com/chihaamin/FGGB/releases/download/{version}/"
-    FGGB = f"FGGB-v{version}.zip"
-    FGGB_path = PATH_DOWNLOADS.joinpath(FGGB)
-    print(FGGB_url + FGGB)
-    download_file(FGGB_url + FGGB, FGGB_path)
+    local_files_path = PATH_BASE.joinpath("files")
+    efdumper_path = PATH_BASE.parent.joinpath(
+        "target", "aarch64-linux-android", "release", "efdumper"
+    )
+
+    if not local_files_path.exists():
+        logger.error(f"Local files path '{local_files_path}' does not exist")
+        return
+
+    if not efdumper_path.exists():
+        logger.error(f"Efdumper path '{efdumper_path}' does not exist")
+        return
+
     files_dir = PATH_BUILD_TMP.joinpath("files")
     files_dir.mkdir(exist_ok=True)
-    extract_file(FGGB_path, files_dir)
+
+    for item in local_files_path.iterdir():
+        if item.is_file():
+            shutil.copy(item, files_dir)
+        elif item.is_dir():
+            shutil.copytree(item, files_dir.joinpath(item.name))
+
+    shutil.copy(efdumper_path, files_dir)
 
 
 def create_updater_json(version: str):
     logger.info("Creating updater.json")
-
+    print(version)
     updater = {
         "version": version,
         "versionCode": int(version.replace(".", "").replace("-", "")),
-        "zipUrl": f"https://github.com/chihaamin/FGGB-Magisk/releases/download/{version}/FGGB-Magisk-{version}.zip",
-        "changelog": "https://raw.githubusercontent.com/chihaamin/FGGB-Magisk/master/CHANGELOG.md",
+        "zipUrl": f"https://github.com/chihaamin/efdumper/releases/download/{version}/efdumper-v{version}.zip",
+        "changelog": "https://raw.githubusercontent.com/chihaamin/efdumper/master/CHANGELOG.md",
     }
 
     with open(PATH_BUILD.joinpath("updater.json"), "w", newline="\n") as f:
@@ -108,7 +123,7 @@ def create_updater_json(version: str):
 def package_module(version: str):
     logger.info("Packaging module")
 
-    module_zip = PATH_BUILD.joinpath(f"FGGB-Magisk-v{version}.zip")
+    module_zip = PATH_BUILD.joinpath(f"efdumper-v{version}.zip")
 
     with zipfile.ZipFile(module_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk(PATH_BUILD_TMP):
